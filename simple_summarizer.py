@@ -123,7 +123,7 @@ def display_results(output):
 if __name__ == "__main__":
     # Example usage with sample documents
     sample_files = [
-        "books.pdf"
+        "files/fullstack.pdf"
     ]
     
     for file_path in sample_files:

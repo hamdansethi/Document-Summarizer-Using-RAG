@@ -144,7 +144,7 @@ def display_results(output):
 
 if __name__ == "__main__":
     sample_files = [
-        "books.pdf"
+        "files/fullstack.pdf"
     ]
     for file_path in sample_files:
         if os.path.exists(file_path):

@@ -84,7 +84,7 @@ Summary:
         | StrOutputParser()
     )
 
-    return rag_chain, retriever
+    return rag_chain, retriever, vector_store  # Return vector_store for similarity_search_with_score
 
 def summarize(file_path):
     start_time = time.time()
@@ -93,13 +93,19 @@ def summarize(file_path):
         docs = load_document(file_path)
         chunks = chunk_document_semantically(docs)
         vector_store = create_vector_store(chunks)
-        rag_chain, retriever = setup_rag_chain(vector_store)
+        rag_chain, retriever, vector_store = setup_rag_chain(vector_store)
 
+        # Summarize each chunk
         chunk_summaries = [rag_chain.invoke(chunk.page_content) for chunk in chunks]
+        # Summarize the chunk summaries into final summary
         final_summary = rag_chain.invoke("\n\n".join(chunk_summaries))
 
-        retrieved_docs = retriever.invoke("summarize this document")
-        similarity_scores = [doc.metadata.get("score", 0) for doc in retrieved_docs]
+        # Retrieve documents with similarity scores
+        results = vector_store.similarity_search_with_score("summarize this document", k=8)
+
+        retrieved_docs = [doc for doc, score in results]
+        similarity_scores = [score for doc, score in results]
+
         latency = time.time() - start_time
 
         return {
